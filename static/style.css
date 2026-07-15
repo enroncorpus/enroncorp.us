@@ -1,0 +1,704 @@
+/* ============================================================
+   Enron Corpus Browser — light theme
+   ============================================================ */
+
+:root {
+  --bg:              #f5f5f5;
+  --surface:         #ffffff;
+  --surface2:        #f5f5f5;
+  --border:          #e0e0e0;
+  --accent:          #007bc2;
+  --accent2:         #005a96;
+  --enron-blue:      #007bc2;
+  --enron-green:     #009655;
+  --enron-red:       #df0032;
+  --text:            #111111;
+  --muted:           #6b6b6b;
+  --selected:        #f5f5f5;
+  --radius:          4px;
+  --mobile-nav-h:    36px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* ============================================================
+   App three-column grid
+   ============================================================ */
+
+#app {
+  display: grid;
+  grid-template-columns: 200px 200px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   Employee sidebar
+   ============================================================ */
+
+#employee-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+#employee-panel-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+  min-height: 36px;
+}
+
+#emp-filter-bar {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+#employee-panel-header > span {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+#emp-filter {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.5;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#emp-filter:focus {
+  border-color: var(--border);
+}
+
+#list-filter-bar {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+#inbox-filter {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+}
+
+#inbox-filter:focus {
+  border-color: var(--border);
+}
+
+#employee-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.emp-item {
+  padding: 0;
+}
+
+.emp-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 12px;
+  user-select: none;
+  list-style: none;
+  transition: background 0.1s;
+}
+
+.emp-summary:hover { background: var(--surface2); }
+
+.emp-summary.active-emp {
+  color: var(--text);
+  background: var(--selected);
+}
+
+.emp-summary.active-emp .emp-arrow,
+.emp-summary.active-emp .emp-count {
+  color: var(--muted);
+}
+
+.emp-arrow {
+  font-size: 9px;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 10px;
+  transition: transform 0.15s;
+}
+
+details.emp-open > .emp-summary .emp-arrow { transform: rotate(90deg); }
+
+.emp-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.emp-folders {
+  padding: 0 0 4px 0;
+}
+
+.folder-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 28px;
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.folder-name {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.folder-count {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.folder-link:hover { color: var(--text); background: var(--surface2); }
+
+.folder-link.active-folder {
+  color: var(--text);
+  background: var(--selected);
+}
+
+.loading-msg {
+  padding: 16px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* ============================================================
+   Email list panel
+   ============================================================ */
+
+#list-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+#list-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+  height: 36px;
+  overflow: hidden;
+}
+
+#list-title {
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+#list-count {
+  display: none;
+}
+
+#email-rows {
+  flex: 1;
+  overflow-y: auto;
+}
+
+#list-empty {
+  padding: 24px 16px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 12px;
+}
+
+.email-row {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.08s;
+}
+
+.email-row:hover { background: var(--surface2); }
+
+.email-row.active {
+  background: var(--selected);
+}
+
+
+.email-row-top {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-bottom: 2px;
+}
+
+.email-row-sender {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.email-row-date {
+  font-size: 10px;
+  color: var(--muted);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.email-row-subject {
+  font-size: 11px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.email-row-preview {
+  font-size: 10px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 1px;
+}
+
+#load-more-sentinel {
+  height: 1px;
+}
+
+/* ============================================================
+   Detail panel (email + network tabs)
+   ============================================================ */
+
+#detail-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+#tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+  min-height: 36px;
+  align-items: stretch;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.5;
+  transition: color 0.1s, background 0.1s;
+}
+
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--text); }
+
+.tab-pane {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.tab-pane.hidden { display: none; }
+
+/* ---- Email view ---- */
+
+#tab-email {
+  overflow-y: auto;
+}
+
+#email-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--muted);
+  gap: 12px;
+}
+
+#email-content {
+  padding: 20px 24px;
+}
+
+#email-subject {
+  font-size: 16px;
+  color: var(--enron-blue);
+  margin-bottom: 14px;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+#email-headers-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+#email-headers-table td {
+  padding: 2px 8px 2px 0;
+  vertical-align: top;
+}
+
+#email-headers-table td:first-child {
+  color: var(--muted);
+  width: 60px;
+  flex-shrink: 0;
+}
+
+#email-headers-table td:last-child {
+  color: var(--text);
+  word-break: break-all;
+}
+
+.hdr-email-link {
+  cursor: pointer;
+  text-decoration: none;
+}
+.hdr-email-link.emp { color: var(--enron-red); }
+.hdr-email-link.ext { color: var(--enron-green); }
+.hdr-email-link:hover { text-decoration: underline; }
+
+#email-body {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+/* ---- Network view ---- */
+
+#tab-network {
+  overflow: hidden;
+}
+
+#graph-reload-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0.7;
+}
+
+#graph-reload-btn:hover {
+  background: var(--surface2);
+  opacity: 1;
+}
+
+
+#network-canvas {
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg);
+  position: relative;
+}
+
+#graph-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--muted);
+}
+
+#graph-loading.hidden { display: none; }
+
+/* ============================================================
+   Toast notifications
+   ============================================================ */
+
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 20px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  z-index: 200;
+  transition: opacity 0.3s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+#toast.hidden { display: none; }
+
+/* ============================================================
+   Scrollbar styling — hidden, scrolling still works
+   ============================================================ */
+
+* {
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* old Edge/IE */
+}
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+
+.hidden { display: none !important; }
+
+/* ---- About view ---- */
+
+#tab-about {
+  overflow-y: auto;
+  padding: 36px 44px;
+  gap: 16px;
+}
+
+#intro-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+#intro-logo-img {
+  /* Width is set in JS (sync_logo_width) to match #intro-stats' actual
+     rendered width exactly — a % here drifts from that text row's
+     content-based width as the container resizes. */
+  height: auto;
+}
+
+#intro-tagline {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text);
+}
+
+#tab-about a {
+  color: var(--enron-blue);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+}
+
+#tab-about a:hover {
+  border-bottom-color: var(--enron-blue);
+}
+
+#intro-body {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+#intro-stats {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 12px 0;
+  /* Shrink-to-fit + self-center, not stretch — #tab-about is a column flex
+     container, so without this #intro-stats defaults to full tab width and
+     its offsetWidth (read in sync_logo_width) would match that instead of
+     the actual "517,401 / 150 / 79,894" text width. */
+  width: fit-content;
+  align-self: center;
+}
+
+.intro-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+
+.intro-stat-n {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--enron-blue);
+  letter-spacing: 1px;
+}
+
+.intro-stat-n.red   { color: var(--enron-red); }
+.intro-stat-n.green { color: var(--enron-green); }
+
+.intro-stat-l {
+  font-size: 12px;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+.intro-section-body {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.75;
+}
+
+/* ============================================================
+   Mobile bottom nav (hidden on desktop)
+   ============================================================ */
+
+#mobile-nav {
+  display: none;
+}
+
+/* ============================================================
+   Responsive — mobile (≤ 768px)
+   ============================================================ */
+
+@media (max-width: 768px) {
+  html, body { overflow: hidden; }
+
+  #app {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    position: relative;
+    height: calc(100vh - var(--mobile-nav-h));
+  }
+
+  /* All panels stack and hide by default */
+  #employee-panel,
+  #list-panel,
+  #detail-panel {
+    position: absolute;
+    inset: 0;
+    display: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* The active mobile panel is shown */
+  #employee-panel.mobile-active,
+  #list-panel.mobile-active,
+  #detail-panel.mobile-active {
+    display: flex;
+  }
+
+  /* File Browser mode: employee sidebar + email list side by side instead
+     of full-screen. left+right only, no explicit width — that's the exact
+     split point twice with no third value to ever conflict with it. */
+  #app.mobile-split #employee-panel.mobile-active,
+  #app.mobile-split #list-panel.mobile-active {
+    width: auto;
+    top: 0;
+    bottom: 0;
+  }
+  #app.mobile-split #employee-panel.mobile-active { left: 0;   right: 50%; }
+  #app.mobile-split #list-panel.mobile-active     { left: 50%; right: 0;   }
+
+  #mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--mobile-nav-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+  }
+
+  #mobile-employees-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  #mobile-employees-btn.active {
+    font-weight: bold;
+  }
+
+  /* About view smaller on mobile */
+  #tab-about { padding: 24px 20px; gap: 14px; }
+  #intro-stats { gap: 16px; flex-wrap: wrap; }
+  .intro-stat-n { font-size: 16px; }
+}

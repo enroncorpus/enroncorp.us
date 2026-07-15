@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>enroncorp.us</title>
+  <link rel="icon" type="image/svg+xml" href="enron-logo.svg">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/vis-network.min.js"></script>
+</head>
+<body>
+
+  <main id="app">
+    <!-- Left: employee sidebar -->
+    <nav id="employee-panel">
+      <div id="employee-panel-header">
+        <span>EMPLOYEES</span>
+      </div>
+      <div id="emp-filter-bar">
+        <input type="text" id="emp-filter" placeholder="search people..." autocomplete="off">
+      </div>
+      <div id="employee-list"></div>
+    </nav>
+
+    <!-- Middle: email list -->
+    <section id="list-panel">
+      <div id="list-header">
+        <span id="list-title">/</span>
+        <span id="list-count"></span>
+      </div>
+      <div id="list-filter-bar">
+        <input type="text" id="inbox-filter" placeholder="search emails..." autocomplete="off" spellcheck="false">
+      </div>
+      <div id="email-rows"></div>
+      <div id="load-more-sentinel"></div>
+      <div id="list-empty" class="hidden">No emails found.</div>
+    </section>
+
+    <!-- Right: email detail + network tabs -->
+    <section id="detail-panel">
+      <div id="tab-bar">
+        <button class="tab-btn active" data-tab="about">ABOUT</button>
+        <button class="tab-btn" data-tab="email">EMAIL</button>
+        <button class="tab-btn" data-tab="network">GRAPH</button>
+      </div>
+
+      <div id="tab-about" class="tab-pane">
+        <div id="intro-header">
+          <img src="enron-logo.svg" id="intro-logo-img" alt="Enron">
+          <span id="intro-tagline">&ldquo;Ask why.&rdquo;</span>
+        </div>
+
+        <div id="intro-stats">
+          <div class="intro-stat"><span class="intro-stat-n red">517,401</span><span class="intro-stat-l">emails</span></div>
+          <div class="intro-stat"><span class="intro-stat-n green">150</span><span class="intro-stat-l">employees</span></div>
+          <div class="intro-stat"><span class="intro-stat-n">79,894</span><span class="intro-stat-l">contacts</span></div>
+        </div>
+
+        <p id="intro-body">
+          Houston Natural Gas merged with InterNorth in 1985 to form
+          <a href="https://en.wikipedia.org/wiki/Enron" target="_blank" rel="noopener">Enron</a>,
+          a regional gas pipeline company. <a href="https://en.wikipedia.org/wiki/Kenneth_Lay" target="_blank" rel="noopener">Kenneth Lay</a>
+          ran it from day one and pushed the company into energy trading: buying and selling
+          contracts for gas, electricity, weather derivatives, and broadband capacity. The bet
+          paid off spectacularly. By 2000 Enron was the seventh-largest company in the United
+          States by revenue, employed roughly 29,000 people worldwide, and had been named
+          <a href="https://en.wikipedia.org/wiki/Fortune_(magazine)" target="_blank" rel="noopener"><em>Fortune</em></a>'s
+          Most Innovative Company in America six years running; its stock traded above $90 a share
+          that August. None of that growth was what it looked like. CFO
+          <a href="https://en.wikipedia.org/wiki/Andrew_Fastow" target="_blank" rel="noopener">Andrew Fastow</a>
+          funded much of it with debt Enron kept off its own books, using private partnerships
+          named LJM and the Raptors, structures accountants call
+          <a href="https://en.wikipedia.org/wiki/Special-purpose_entity" target="_blank" rel="noopener">special purpose entities</a>,
+          to book losses as profit instead of debt. The scheme collapsed in October 2001: Enron
+          restated its earnings, erased $1.2 billion in shareholder equity, and its stock fell from
+          $90 to under a dollar within weeks. It filed the largest corporate
+          <a href="https://en.wikipedia.org/wiki/Enron_scandal" target="_blank" rel="noopener">bankruptcy</a>
+          in U.S. history that December, wiping out $74 billion in shareholder value and the
+          retirement savings of thousands of employees who held company stock in their 401(k)
+          plans. Congress answered the next year with the
+          <a href="https://en.wikipedia.org/wiki/Sarbanes%E2%80%93Oxley_Act" target="_blank" rel="noopener">Sarbanes&ndash;Oxley Act</a>,
+          the most sweeping reform of corporate accounting and disclosure law since the 1930s: it
+          created a new board to police auditors, forced CEOs and CFOs to personally certify their
+          own financial statements, and reshaped how every public company in America reports its
+          books to this day.
+        </p>
+
+        <p class="intro-section-body">
+          The fraud drew two separate federal investigations. The Securities and Exchange
+          Commission and the Justice Department went after the accounting itself, while the
+          <a href="https://en.wikipedia.org/wiki/Federal_Energy_Regulatory_Commission" target="_blank" rel="noopener">Federal Energy Regulatory Commission</a>
+          (FERC) was chasing something else entirely: Enron's role in the
+          <a href="https://en.wikipedia.org/wiki/2000%E2%80%932001_California_electricity_crisis" target="_blank" rel="noopener">2000 to 2001 California electricity crisis</a>,
+          where traders used strategies nicknamed Death Star, Fat Boy, and Ricochet to manipulate
+          power prices and profit from rolling blackouts. FERC's probe is why this dataset exists.
+          Investigators subpoenaed and later released the email archives of 150 employees, mostly
+          executives and traders, as public record. Enron employed about 29,000 people; the other
+          28,850 addresses in this
+          <a href="https://en.wikipedia.org/wiki/Enron_Corpus" target="_blank" rel="noopener">corpus</a>
+          appear only because they exchanged mail with one of those 150, not because they had a
+          mailbox of their own. An @enron.com address here does not guarantee a browseable inbox:
+          only the 150 archived employees have one.
+          <a href="https://en.wikipedia.org/wiki/Carnegie_Mellon_University" target="_blank" rel="noopener">Carnegie Mellon University</a>'s
+          William Cohen later cleaned up the original release, which had scrambled folder
+          structures and duplicate messages, and republished it as the version most researchers
+          use today.
+        </p>
+
+        <p class="intro-section-body">
+          This site puts that corpus in front of you directly. Use the file explorer to browse by
+          name and folder, or search across all 517,401 emails at once. Open the
+          Graph tab to see who emailed whom across the whole company: each dot is
+          a node, one email address, and a line between two nodes means they exchanged mail;
+          bigger dots have more distinct connections, not just more email volume. Red nodes are
+          the 150 archived employees, green nodes are everyone else, from other Enron staff to
+          outside banks, law firms, and regulators. The graph only draws roughly 1,500 of the
+          busiest nodes at a time rather than all 79,894 addresses in the corpus, so plenty of
+          real correspondents never show up as a green dot. Zoom in and node names appear once you
+          are close enough to read them. Click any node to open that person's mailbox, the same
+          view the file explorer reaches. The layout settles on its own, pulling frequent
+          correspondents together and pushing strangers apart, so clusters in the graph roughly
+          trace real working relationships. The code for this site is open source and mirrored on
+          <a href="https://github.com/enroncorpus/enroncorp.us/tree/main" target="_blank" rel="noopener">GitHub</a>, where you'll
+          also find a more detailed write-up. Found a bug or have a question? Email
+          <a href="mailto:maintainer@enroncorp.us">maintainer@enroncorp.us</a>.
+        </p>
+      </div>
+
+      <div id="tab-email" class="tab-pane hidden">
+        <div id="email-placeholder">
+          <p>None selected.</p>
+        </div>
+        <div id="email-content" class="hidden">
+          <div id="email-meta">
+            <div id="email-subject"></div>
+            <table id="email-headers-table">
+              <tbody id="email-headers-body"></tbody>
+            </table>
+          </div>
+          <pre id="email-body"></pre>
+        </div>
+      </div>
+
+      <div id="tab-network" class="tab-pane hidden">
+        <div id="graph-loading">Loading graph…</div>
+        <div id="network-canvas" class="hidden">
+          <button id="graph-reload-btn">↺</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Mobile bottom nav -->
+  <nav id="mobile-nav">
+    <button id="mobile-employees-btn">File Browser</button>
+  </nav>
+
+  <div id="toast" class="hidden"></div>
+  <script src="app.js"></script>
+</body>
+</html>
